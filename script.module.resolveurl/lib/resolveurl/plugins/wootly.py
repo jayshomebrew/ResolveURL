@@ -37,16 +37,17 @@ class WootlyResolver(ResolveUrl):
         if r:
             cookiestr = resp1.get_headers(as_dict=True).get('Set-Cookie', '').split(';')[0]
             headers.update({'Referer': web_url, 'Cookie': cookiestr})
-            resp2 = self.net.http_GET(r.group(1), headers=headers)
+            resp2 = self.net.http_GET(ref + 'prime', headers=headers)
             cookiestr += '; {0}'.format(resp2.get_headers(as_dict=True).get('Set-Cookie', '').split(';')[0])
-            data = {'qdf': 1}
+            data = {'qdfx': 1}
             headers.update({'Origin': ref[:-1], 'Cookie': cookiestr})
             html = self.net.http_POST(r.group(1), form_data=data, headers=headers).content
             tk = re.search(r'tk="([^"]+)', html)
             vd = re.search(r'vd="([^"]+)', html)
             c = re.search(r',\s*c="([^"]+)', html)
-            cn = re.search(r',\s*cn="([^"]+)', html)
-            cv = re.search(r',\s*cv="([^"]+)', html)
+            resp2content = resp2.content.replace(';',' ')
+            cn = re.search(r'cn="([^"]+)', resp2content)
+            cv = re.search(r'cv="([^"]+)"', resp2content)
             if all([tk, vd, c, cn, cv]):
                 url2 = urllib_parse.urljoin(r.group(1), c.group(1))
                 params = {'t': tk.group(1), 'id': vd.group(1)}
